@@ -68,7 +68,7 @@ def parse_files(
 ) -> tuple[List[PromptItem], List[FunDef]]:
     prompts_raw = load_json_list(input_path)
     prompts = [PromptItem(**item) for item in prompts_raw]
-
+    
     functions_raw = load_json_list(definition_path)
     functions = [FunDef(**item) for item in functions_raw]
 

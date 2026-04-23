@@ -27,3 +27,25 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
+# model = Small_LLM_Model()
+
+# full_prompt = build_prompt(user_prompt, functions)
+# input_ids = model.encode(full_prompt)[0].tolist()
+
+# generated_ids = []
+
+# while not done:
+#     current_ids = input_ids + generated_ids
+#     logits = model.get_logits_from_input_ids(current_ids)
+
+#     allowed_ids = get_allowed_token_ids(current_text, functions, vocab)
+
+#     next_id = pick_best_valid_token(logits, allowed_ids)
+#     generated_ids.append(next_id)
+
+# result = model.decode(generated_ids)
