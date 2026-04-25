@@ -9,7 +9,24 @@ from .filter import load_vocab_map, generate_one
 
 
 
+def test(prompts_list, full_prompts, model, functions, vocab_map):
 
+
+    prompt = prompts_list
+    full_prompt = full_prompts
+
+    # print("PROMPT:")
+    # print(prompt)
+
+    # print("FULL PROMPT:")
+    # print(full_prompt)
+    i = 0
+    for prompt in prompts_list:
+        print (f"\n\n this is prompt ::  {prompt}")
+        raw_output = generate_one(model, full_prompt[i], functions, vocab_map)
+        i += 1
+        print("RAW MODEL OUTPUT:")
+        print(raw_output)
 
 
 
@@ -26,10 +43,11 @@ def main() -> None:
 
         args = get_args()
         prompts, functions = parse_files(args.input, args.functions_definition)
-        full_prompts = transform_prompts(prompts, functions)
+        full_prompts, prompts_list = transform_prompts(prompts, functions)
         model = Small_LLM_Model()
         vocap = load_vocab_map(model)
-        print(generate_one(model, full_prompts[0], functions, vocap))
+        test(prompts_list, full_prompts, model, functions, vocap)
+
 
     except FileNotFoundError as e:
         print(f"Error: file not found: {e.filename}")

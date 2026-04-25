@@ -25,12 +25,15 @@ def transform_prompts(prompts, functions) -> list[str]:
     return_instruction += '- "name"\n- "parameters"\n\n'
     return_instruction += 'Do not include the "prompt" key.\n'
     return_instruction += 'Do not include any explanation, comments, or extra text\n'
+    prompts_list = []
     for prom in prompts:
         full_prompt = functions_text
         full_prompt += "User request:\n"
         full_prompt += f"{prom.prompt}\n\n"
         full_prompt += return_instruction
 
+        prompts_list.append(prom.prompt)
+
         all_prompts.append(full_prompt)
 
-    return all_prompts
+    return all_prompts, prompts_list
