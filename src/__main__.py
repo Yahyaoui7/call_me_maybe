@@ -46,7 +46,7 @@ def main() -> None:
         full_prompts, prompts_list = transform_prompts(prompts, functions)
         model = Small_LLM_Model()
         vocap = load_vocab_map(model)
-        test(prompts_list, full_prompts, model, functions, vocap)
+        # test(prompts_list, full_prompts, model, functions, vocap)
 
 
     except FileNotFoundError as e:

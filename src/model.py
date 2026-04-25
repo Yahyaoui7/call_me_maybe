@@ -18,7 +18,7 @@ def transform_functions(functions) -> str:
     return full_string
 
 
-def transform_prompts(prompts, functions) -> list[str]:
+def transform_prompts(prompts, functions) ->tuple[list[str], list[str]]:
     all_prompts = []
     functions_text = transform_functions(functions)
     return_instruction = "Return only a valid JSON object with exactly these keys:\n"
