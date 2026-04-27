@@ -1,4 +1,5 @@
 import json
+from typing import Any
 
 
 def load_vocab_map(model) -> tuple[dict[str, int], dict[int, str]]:
@@ -80,8 +81,8 @@ def constrained_generate_from_choices(
                 return choice
 
         allowed_ids = get_allowed_next_ids(
-            generated_ids=generated_ids,
-            choice_ids=choice_ids,
+            generated_ids,
+            choice_ids,
         )
 
         if not allowed_ids:
@@ -98,5 +99,66 @@ def constrained_generate_from_choices(
 
         generated_ids.append(next_id)
 
+# = = =  prameters decoding  = = =
+
+def find_function_by_name(function_name: str, functions: list):
+
+    for function in functions :
+        if function.name == function_name:
+            return function
+    raise ValueError(f"Function not found {function_name}")
 
 
+
+
+def get_last_logits(logits: Any) -> list[float]:
+    """Convert model logits to a simple list of scores."""
+
+    if hasattr(logits, "tolist"):
+        logits = logits.tolist()
+
+    while isinstance(logits, list) and logits and isinstance(logits[0], list):
+        logits = logits[-1]
+
+    return logits
+
+
+def choose_best_token(logits: Any) -> int:
+    """Choose the token with the highest score."""
+
+    scores = get_last_logits(logits)
+
+    best_id = 0
+    best_score = scores[0]
+
+    for token_id, score in enumerate(scores):
+        if score > best_score:
+            best_score = score
+            best_id = token_id
+
+    return best_id
+
+
+def generate_json_text(model: Any, full_prompt: str, max_tokens: int = 80) -> str:
+    """Ask the LLM to generate JSON text."""
+
+    prompt_ids = encode_to_ids(model, full_prompt)
+    generated_ids: list[int] = []
+
+    for _ in range(max_tokens):
+        input_ids = prompt_ids + generated_ids
+
+        logits = model.get_logits_from_input_ids(input_ids)
+        next_id = choose_best_token(logits)
+
+        generated_ids.append(next_id)
+
+        generated_text = model.decode(generated_ids)
+
+        start = generated_text.find("{")
+        end = generated_text.find("}")
+
+        if start != -1 and end != -1 and end > start:
+            return generated_text[start:end + 1]
+
+    raise ValueError("Could not generate parameters JSON.")
