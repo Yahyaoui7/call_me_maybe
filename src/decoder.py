@@ -2,16 +2,16 @@ import json
 from typing import Any
 
 
-def load_vocab_map(model) -> tuple[dict[str, int], dict[int, str]]:
-    path_vocab = model.get_path_to_vocab_file()
+# def load_vocab_map(model) -> tuple[dict[str, int], dict[int, str]]:
+#     path_vocab = model.get_path_to_vocab_file()
 
-    with open(path_vocab, "r", encoding="utf-8") as file:
-        vocab = json.load(file)
+#     with open(path_vocab, "r", encoding="utf-8") as file:
+#         vocab = json.load(file)
 
-    token_to_id = {k: v for k, v in vocab.items()}
-    id_to_token = {v: k for k, v in vocab.items()}
+#     token_to_id = {k: v for k, v in vocab.items()}
+#     id_to_token = {v: k for k, v in vocab.items()}
 
-    return token_to_id, id_to_token
+#     return token_to_id, id_to_token
 
 
 def encode_to_ids(model, text: str) -> list[int]:
@@ -69,7 +69,7 @@ def constrained_generate_from_choices(
     choices: list[str],
 ) -> str:
     """Generate only one value from choices."""
-
+    print(full_prompt)
     prompt_ids = encode_to_ids(model, full_prompt)
     choice_ids = [encode_to_ids(model, choice) for choice in choices]
     generated_ids: list[int] = []

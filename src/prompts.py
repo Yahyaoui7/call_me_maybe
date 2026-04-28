@@ -1,16 +1,20 @@
 
 
 def build_function_name_prompt(prompt: str, functions: list) -> str:
-    text = "Choose the best function for the user request.\n\n"
-    text += f"User request: {prompt}\n\n"
+    text = "Task: match the user request to exactly one function name from the list.\n"
+
     text += "Available functions:\n"
 
     for function in functions:
         text += f"- {function.name}: {function.description}\n"
-
-    text += "\nAnswer with only the function name:\n"
-
+        text +=  "parameters:\n"
+        for name, schema in function.parameters.items():
+            text += f"{name}: {schema.type}, "
+        text += "\n"
+    text += f"User request:\n{prompt}\n"
+    text += 'function name is: '
     return text
+
 
 
 def build_parameters_prompt(prompt: str, function):
@@ -29,3 +33,5 @@ def build_parameters_prompt(prompt: str, function):
     text += "Do not include explanation.\n"
 
     return text
+
+

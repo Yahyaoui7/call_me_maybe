@@ -4,7 +4,6 @@ from pathlib import Path
 from pydantic import ValidationError
 from .model import transform_prompts
 from .io_utils import get_args, parse_files
-from .decoder import load_vocab_map
 from .generator import generate_one
 
 
