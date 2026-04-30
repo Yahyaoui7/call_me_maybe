@@ -2,11 +2,43 @@ from llm_sdk import Small_LLM_Model
 import json
 from pathlib import Path
 from pydantic import ValidationError
-from .model import transform_prompts
+from typing import Any
+
+
 from .io_utils import get_args, parse_files
-from .generator import generate_one
+from .model import transform_prompts
+from .generator import FunctionCallGenerator
+from .prompts import PromptBuilder
+from .decoder import Decoder
 
 
+def generate_one(
+    prompt: str,
+    functions: list[Any],
+    model: Any,
+) -> dict[str, Any]:
+    """Generate one valid function-call object for one prompt."""
+
+    prompt_builder = PromptBuilder(prompt)
+    decoder = Decoder(model)
+
+    call_generator = FunctionCallGenerator(
+        functions=functions,
+        prompt_builder=prompt_builder,
+        decoder=decoder,
+)
+
+    function_name = call_generator.generate_function_name()
+
+    parameters = call_generator.generate_parameters(
+        function_name=function_name,
+    )
+
+    return {
+        "prompt": prompt,
+        "name": function_name,
+        "parameters": parameters,
+    }
 
 
 

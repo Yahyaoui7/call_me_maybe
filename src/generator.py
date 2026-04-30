@@ -1,71 +1,57 @@
 
-
-from .decoder import constrained_generate_from_choices, find_function_by_name, generate_json_text
-
-from .prompts import build_function_name_prompt, build_parameters_prompt
 from typing import Any
 import json
 
-def generate_function_name(
-    prompt: str,
-    functions: list,
-    model,
-) -> str:
-    function_names = [function.name for function in functions]
 
-    full_prompt = build_function_name_prompt(prompt, functions)
+class FunctionCallGenerator:
 
-    return constrained_generate_from_choices(
-        model=model,
-        full_prompt=full_prompt,
-        choices=function_names,
-    )
+    def __init__(
+        self,
+        functions: list,
+        prompt_builder,
+        decoder,
+    ) -> None:
+        self.functions = functions
+        self.prompt_builder = prompt_builder
+        self.decoder = decoder
 
-def generate_parameters(
-    prompt: str,
-    function_name: str,
-    functions: list,
-    model: Any,
-) -> dict[str, Any]:
-    """Generate parameters for the selected function."""
+    def generate_function_name(self,
+    ) -> str:
+        function_names = [function.name for function in self.functions]
 
-    func = find_function_by_name(function_name, functions)
-    full_prompt = build_parameters_prompt(prompt, func)
+        full_prompt = self.prompt_builder.build_function_name_prompt(self.functions)
 
-    json_text = generate_json_text(model, full_prompt)
-    parameters = json.loads(json_text)
+        return self.decoder.constrained_generate_from_choices(
+            full_prompt=full_prompt,
+            choices=function_names,
+        )
 
-    if not isinstance(parameters, dict):
-        raise ValueError("Generated parameters are not a JSON object.")
 
-    return parameters
+    def find_function_by_name(self, function_name: str):
 
-def generate_one(
-    prompt: str,
-    functions: list[Any],
-    model: Any,
-) -> dict[str, Any]:
-    """Generate one valid function-call object for one prompt."""
+        for function in self.functions :
+            if function.name == function_name:
+                return function
+        raise ValueError(f"Function not found {function_name}")
 
-    function_name = generate_function_name(
-        prompt=prompt,
-        functions=functions,
-        model=model,
-    )
 
-    function_names = [function.name for function in functions]
-    if function_name not in function_names:
-        raise ValueError(f"Unknown function generated: {function_name}")
 
-    parameters = generate_parameters(
-        prompt=prompt,
-        function_name=function_name,
-        functions=functions,
-        model=model,
-    )
-    return {
-        "prompt": prompt,
-        "name": function_name,
-        "parameters": parameters,
-    }
+    def generate_parameters(self,
+        function_name: str,
+
+    ) -> dict[str, Any]:
+        """Generate parameters for the selected function."""
+
+        func = self.find_function_by_name(function_name)
+        full_prompt = self.prompt_builder.build_parameters_prompt(func)
+
+        json_text = self.decoder.generate_json_text(full_prompt)
+        print("JSON TEXT:", repr(json_text))
+        parameters = json.loads(json_text)
+
+        if not isinstance(parameters, dict):
+            raise ValueError("Generated parameters are not a JSON object.")
+
+        return parameters
+
 

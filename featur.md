@@ -1,18 +1,4 @@
 
-check duplicate functions  in parsing part !!
- leanr about concepte:  Finite State Machines (FSM)
 
+- chacke commend 'make run' in makefile : if can i add names input output files
 
-
-
-generate_parameters()
-    ↓
-find selected function
-    ↓
-build parameters prompt
-    ↓
-LLM generates parameters JSON
-    ↓
-parse JSON text
-    ↓
-return dict
