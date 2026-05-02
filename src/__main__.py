@@ -40,7 +40,7 @@ def generate_one(
     }
 
 
-def transform_prompts(prompts: list) -> tuple[list[str], list[str]]:
+def transform_prompts(prompts: list[Any]) -> list[Any]:
 
     prompts_list = []
 

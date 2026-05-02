@@ -1,4 +1,7 @@
-def validate_result(result: dict, function_names: list[str]) -> None:
+from typing import Any
+
+
+def validate_result(result: dict[str, Any], function_names: list[str]) -> None:
     if "prompt" not in result:
         raise ValueError("Missing prompt")
 

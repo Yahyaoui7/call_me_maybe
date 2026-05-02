@@ -1,6 +1,6 @@
 import argparse
 import json
-from typing import Dict, List, Literal
+from typing import Dict, List, Literal, Any
 
 from pydantic import BaseModel, Field
 
@@ -23,7 +23,7 @@ class FunDef(BaseModel):
     returns: Parameter
 
 
-def load_json_list(path: str) -> List[dict]:
+def load_json_list(path: str) -> List[dict[str, Any]]:
     with open(path, "r", encoding="utf-8") as file:
         data = json.load(file)
 

@@ -1,11 +1,12 @@
 from typing import Any
+from .io_utils import FunDef
 
 
 class PromptBuilder:
     def __init__(self, prompt: str) -> None:
         self.prompt = prompt
 
-    def build_function_name_prompt(self, functions: list) -> str:
+    def build_function_name_prompt(self, functions: list[FunDef]) -> str:
         text = (
             "Task: match the user request to exactly one function name "
             "from the list.\n"
@@ -26,7 +27,7 @@ class PromptBuilder:
 
         return text
 
-    def build_parameters_prompt(self, function: list[Any]) -> str:
+    def build_parameters_prompt(self, function: Any) -> str:
         text = "You extract only function parameters from user requests.\n"
 
         text += "\nRules:\n"

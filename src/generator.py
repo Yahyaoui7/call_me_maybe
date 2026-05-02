@@ -8,7 +8,7 @@ class FunctionCallGenerator:
 
     def __init__(
         self,
-        functions: list,
+        functions: list[Any],
         prompt_builder: PromptBuilder,
         decoder: Decoder,
     ) -> None:
@@ -29,12 +29,14 @@ class FunctionCallGenerator:
             choices=function_names,
         )
 
-    def find_function_by_name(self, function_name: str):
+    def find_function_by_name(self, function_name: str) -> Any:
+        """Return the function object matching the given function name."""
 
         for function in self.functions:
             if function.name == function_name:
                 return function
-        raise ValueError(f"Function not found {function_name}")
+
+        raise ValueError(f"Function not found: {function_name}")
 
     def generate_parameters(
         self,
@@ -46,7 +48,6 @@ class FunctionCallGenerator:
         full_prompt = self.prompt_builder.build_parameters_prompt(func)
 
         json_text = self.decoder.generate_json_text(full_prompt)
-        print("JSON TEXT:", repr(json_text))
         parameters = json.loads(json_text)
 
         if not isinstance(parameters, dict):
