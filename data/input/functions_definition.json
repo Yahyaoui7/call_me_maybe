@@ -61,7 +61,7 @@
         "type": "string"
       },
       "replacement": {
-        "type" :	"string"
+        "type": "string"
       }
     },
     "returns": {

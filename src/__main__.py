@@ -9,6 +9,36 @@ from .io_utils import get_args, parse_files
 from .generator import FunctionCallGenerator
 from .prompts import PromptBuilder
 from .decoder import Decoder
+from .io_utils import FunDef
+
+
+def get_function(function_name: str, functions: list[FunDef]) -> FunDef:
+    for fun in functions:
+        if function_name == fun.name:
+            return fun
+    raise ValueError(f"Unknown function: {function_name}")
+
+
+def normalize_parameters(
+    parameters: dict[str, Any],
+    function_def: FunDef,
+) -> dict[str, Any]:
+    fixed: dict[str, Any] = {}
+
+    for key, value in parameters.items():
+        if key not in function_def.parameters:
+            raise ValueError(
+                f"Unknown parameter '{key}' for function '{function_def.name}'"
+            )
+
+        param_type = function_def.parameters[key].type
+
+        if param_type == "number":
+            fixed[key] = float(value)
+        else:
+            fixed[key] = value
+
+    return fixed
 
 
 def generate_one(
@@ -17,7 +47,6 @@ def generate_one(
     model: Any,
 ) -> dict[str, Any]:
     """Generate one valid function-call object for one prompt."""
-
     prompt_builder = PromptBuilder(prompt)
     decoder = Decoder(model)
 
@@ -32,7 +61,8 @@ def generate_one(
     parameters = call_generator.generate_parameters(
         function_name=function_name,
     )
-
+    fun = get_function(function_name, functions)
+    parameters = normalize_parameters(parameters, fun)
     return {
         "prompt": prompt,
         "name": function_name,
