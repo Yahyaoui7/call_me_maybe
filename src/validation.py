@@ -1,6 +1,3 @@
-\
-
-
 def validate_result(result: dict, function_names: list[str]) -> None:
     if "prompt" not in result:
         raise ValueError("Missing prompt")

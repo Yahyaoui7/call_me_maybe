@@ -6,7 +6,6 @@ from typing import Any
 
 
 from .io_utils import get_args, parse_files
-from .model import transform_prompts
 from .generator import FunctionCallGenerator
 from .prompts import PromptBuilder
 from .decoder import Decoder
@@ -26,7 +25,7 @@ def generate_one(
         functions=functions,
         prompt_builder=prompt_builder,
         decoder=decoder,
-)
+    )
 
     function_name = call_generator.generate_function_name()
 
@@ -41,6 +40,15 @@ def generate_one(
     }
 
 
+def transform_prompts(prompts: list) -> tuple[list[str], list[str]]:
+
+    prompts_list = []
+
+    for prom in prompts:
+
+        prompts_list.append(prom.prompt)
+
+    return prompts_list
 
 
 def main() -> None:
@@ -48,7 +56,7 @@ def main() -> None:
         args = get_args()
         prompts, functions = parse_files(args.input, args.functions_definition)
 
-        _, prompts_list = transform_prompts(prompts, functions)
+        prompts_list = transform_prompts(prompts)
 
         model = Small_LLM_Model()
 
@@ -81,5 +89,7 @@ def main() -> None:
         print(e)
     except ValueError as e:
         print(f"Error: {e}")
+
+
 if __name__ == "__main__":
     main()

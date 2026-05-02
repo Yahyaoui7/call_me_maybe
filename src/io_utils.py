@@ -40,11 +40,11 @@ def load_json_list(path: str) -> List[dict]:
 def get_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Call Me Maybe: parsing input files"
-    )
+        )
     parser.add_argument(
-        "--functions_definitions",
+        "--functions_definition",
         type=str,
-        default="data/input/function_definition.json",
+        default="data/input/functions_definition.json",
         help="Path to the functions definition JSON file",
     )
     parser.add_argument(
