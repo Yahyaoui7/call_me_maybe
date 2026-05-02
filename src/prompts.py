@@ -1,5 +1,6 @@
 from typing import Any
 
+
 class PromptBuilder:
     def __init__(self, prompt: str) -> None:
         self.prompt = prompt
