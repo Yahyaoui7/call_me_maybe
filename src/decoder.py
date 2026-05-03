@@ -133,24 +133,51 @@ class Decoder:
     def generate_json_text(
         self,
         full_prompt: str,
-        max_tokens: int = 80,
+        max_tokens: int = 200,
     ) -> str:
         prompt_ids = self.encode_to_ids(full_prompt)
         generated_ids: list[int] = []
 
+        started = False
+        brace_count = 0
+        inside_string = False
+        escape_next = False
+
         for _ in range(max_tokens):
             input_ids = prompt_ids + generated_ids
-
             logits = self.model.get_logits_from_input_ids(input_ids)
             next_id = self.choose_best_token(logits)
-
             generated_ids.append(next_id)
 
             generated_text = self.model.decode(generated_ids)
-            start = generated_text.find("{")
-            end = generated_text.find("}")
 
-            if start != -1 and end != -1 and end > start:
-                return generated_text[start: end + 1]
+            started = False
+            brace_count = 0
+            inside_string = False
+            escape_next = False
+
+            for i, char in enumerate(generated_text):
+                if escape_next:
+                    escape_next = False
+                    continue
+
+                if char == "\\" and inside_string:
+                    escape_next = True
+                    continue
+
+                if char == '"':
+                    inside_string = not inside_string
+                    continue
+
+                if not inside_string:
+                    if char == "{":
+                        started = True
+                        brace_count += 1
+                    elif char == "}":
+                        brace_count -= 1
+                        if started and brace_count == 0:
+                            return generated_text[: i + 1]
+
+        raise ValueError("Could not generate complete JSON.")
 
         raise ValueError("Could not generate parameters JSON.")

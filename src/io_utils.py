@@ -5,7 +5,7 @@ from typing import Dict, List, Literal, Any
 from pydantic import BaseModel, Field
 
 
-FormatPossible = Literal["number", "string", "boolean"]
+FormatPossible = Literal["number", "string", "boolean", "integer"]
 
 
 class PromptItem(BaseModel):

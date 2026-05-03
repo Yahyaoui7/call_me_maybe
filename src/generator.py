@@ -48,8 +48,10 @@ class FunctionCallGenerator:
         full_prompt = self.prompt_builder.build_parameters_prompt(func)
 
         json_text = self.decoder.generate_json_text(full_prompt)
-        parameters = json.loads(json_text)
-
+        try:
+            parameters = json.loads(json_text)
+        except json.JSONDecodeError:
+            raise ValueError(f"Parameters are not valid JSON: {json_text}")
         if not isinstance(parameters, dict):
             raise ValueError("Generated parameters are not a JSON object.")
 
