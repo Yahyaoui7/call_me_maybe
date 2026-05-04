@@ -1,17 +1,9 @@
-from typing import Any, Protocol
-
-
-class ModelProtocol(Protocol):
-    def encode(self, text: str) -> Any: ...
-
-    def get_logits_from_input_ids(self, input_ids: list[int]) -> Any: ...
-
-    def decode(self, ids: list[int]) -> str: ...
+from typing import Any
 
 
 class Decoder:
 
-    def __init__(self, model: ModelProtocol) -> None:
+    def __init__(self, model: Any) -> None:
         self.model = model
 
     def encode_to_ids(self, text: str) -> list[int]:
@@ -134,7 +126,7 @@ class Decoder:
         self,
         full_prompt: str,
         max_tokens: int = 200,
-    ) -> str:
+    ) -> Any:
         prompt_ids = self.encode_to_ids(full_prompt)
         generated_ids: list[int] = []
 
@@ -179,5 +171,3 @@ class Decoder:
                             return generated_text[: i + 1]
 
         raise ValueError("Could not generate complete JSON.")
-
-        raise ValueError("Could not generate parameters JSON.")
