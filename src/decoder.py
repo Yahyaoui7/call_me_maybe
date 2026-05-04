@@ -6,23 +6,11 @@ class Decoder:
     def __init__(self, model: Any) -> None:
         self.model = model
 
-    def encode_to_ids(self, text: str) -> list[int]:
+    def encode_to_ids(self, text: str) -> Any:
         ids_obj = self.model.encode(text)
-
-        if hasattr(ids_obj, "tolist"):
-            ids_obj = ids_obj.tolist()
-
-        if (
-            isinstance(ids_obj, list)
-            and ids_obj
-            and isinstance(ids_obj[0], list)
-        ):
-            ids_obj = ids_obj[0]
-
-        if not isinstance(ids_obj, list):
-            raise TypeError("Model encode must return a list of token IDs.")
-
-        return [int(token_id) for token_id in ids_obj]
+        ids_obj = ids_obj.tolist()
+        ids_obj = ids_obj[0]
+        return ids_obj
 
     def get_allowed_next_ids(
         self,
@@ -45,10 +33,9 @@ class Decoder:
     ) -> int:
         best_id: int | None = None
         best_score: float | None = None
-        scores = self.get_last_logits(logits)
 
         for token_id in allowed_ids:
-            score = scores[token_id]
+            score = logits[token_id]
 
             if best_score is None or score > best_score:
                 best_score = score
@@ -90,6 +77,8 @@ class Decoder:
             )
 
             generated_ids.append(next_id)
+
+#   this bolw about decode prompt ?
 
     def get_last_logits(self, logits: Any) -> list[float]:
         logits_obj = logits
