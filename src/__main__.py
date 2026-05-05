@@ -54,6 +54,7 @@ def generate_one(
         functions=functions,
         prompt_builder=prompt_builder,
         decoder=decoder,
+        prompt=prompt
     )
 
     function_name = call_generator.generate_function_name()
@@ -97,17 +98,20 @@ def main() -> None:
             file.write("[\n")
 
             for index, prompt in enumerate(prompts_list):
-                result = generate_one(
-                    prompt=prompt,
-                    functions=functions,
-                    model=model,
-                )
+                try:
+                    result = generate_one(
+                        prompt=prompt,
+                        functions=functions,
+                        model=model,
+                    )
 
-                if index > 0:
-                    file.write(",\n")
+                    if index > 0:
+                        file.write(",\n")
 
-                json.dump(result, file, indent=4)
-                file.flush()
+                    json.dump(result, file, indent=4)
+                    file.flush()
+                except TypeError as e:
+                    print(f"ERROR: {e}")
 
             file.write("\n]\n")
     except FileNotFoundError as e:

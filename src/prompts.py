@@ -6,24 +6,44 @@ class PromptBuilder:
     def __init__(self, prompt: str) -> None:
         self.prompt = prompt
 
-    def build_function_name_prompt(self, functions: list[FunDef]) -> str:
-        text = (
-            "Task: match the user request to exactly one function name "
-            "from the list.\n"
-        )
-        text += "Available functions:\n"
 
+    def build_function_name_prompt(
+        self,
+        functions: list[FunDef],
+    ) -> str:
+        text = "Choose the best function for the user request.\n\n"
+
+        text += "Rules:\n"
+        text += (
+            "- Choose exactly one function name from the available functions.\n"
+        )
+        text += '- Choose "__none__" only if no available function can do the request.\n'
+        text += "- Do not guess if the request is unrelated.\n"
+        text += "- Write only the function name.\n\n"
+
+        text += "Examples:\n"
+        text += "Request: What is the weather today?\n"
+        text += "Answer: __none__\n\n"
+
+        text += "Request: Open Google Chrome\n"
+        text += "Answer: __none__\n\n"
+
+        text += "Request: What is the sum of 2 and 3?\n"
+        text += "Answer: fn_add_numbers\n\n"
+
+        text += "Request: Greet John\n"
+        text += "Answer: fn_greet\n\n"
+
+        text += 'Request: Reverse the string "hello"\n'
+        text += "Answer: fn_reverse_string\n\n"
+
+        text += "Available functions:\n"
         for function in functions:
             text += f"- {function.name}: {function.description}\n"
-            text += "Parameters:\n"
 
-            for name, schema in function.parameters.items():
-                text += f"- {name}: {schema.type}\n"
-
-            text += "\n"
-
-        text += f"User request:\n{self.prompt}\n"
-        text += "Function name is: "
+        text += "\nUser request:\n"
+        text += self.prompt
+        text += "\n\nAnswer:"
 
         return text
 

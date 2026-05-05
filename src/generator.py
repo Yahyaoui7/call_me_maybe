@@ -11,23 +11,30 @@ class FunctionCallGenerator:
         functions: list[Any],
         prompt_builder: PromptBuilder,
         decoder: Decoder,
+        prompt: str
     ) -> None:
         self.functions = functions
         self.prompt_builder = prompt_builder
         self.decoder = decoder
+        self.prompt = prompt
 
     def generate_function_name(
         self,
     ) -> str:
         function_names = [function.name for function in self.functions]
-
+        function_names.append("__none__")
         full_prompt = self.prompt_builder.build_function_name_prompt(
-            self.functions)
-
-        return self.decoder.constrained_generate_from_choices(
-            full_prompt=full_prompt,
-            choices=function_names,
+            self.functions
         )
+
+        chosen_name = self.decoder.constrained_generate_from_choices(
+            full_prompt=full_prompt,
+            choices=function_names)
+        if chosen_name == "__none__":
+            raise TypeError(
+                f"No matching function found for prompt: {self.prompt}"
+            )
+        return chosen_name
 
     def find_function_by_name(self, function_name: str) -> Any:
         """Return the function object matching the given function name."""
