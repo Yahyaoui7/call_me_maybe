@@ -1,4 +1,3 @@
-
 install:
 	uv sync
 

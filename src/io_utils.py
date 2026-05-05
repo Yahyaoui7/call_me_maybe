@@ -59,6 +59,12 @@ def get_args() -> argparse.Namespace:
         default="data/output/function_calling_results.json",
         help="Path where the results will be saved later",
     )
+    parser.add_argument(
+        "--model",
+        type=str,
+        default="Qwen/Qwen3-0.6B",
+        help="Name of the model to use",
+    )
     return parser.parse_args()
 
 

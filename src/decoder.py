@@ -1,4 +1,5 @@
 from typing import Any
+import json
 
 
 class Decoder:
@@ -78,38 +79,30 @@ class Decoder:
 
             generated_ids.append(next_id)
 
-#   this bolw about decode prompt ?
-
-    def get_last_logits(self, logits: Any) -> list[float]:
-        logits_obj = logits
-
-        if hasattr(logits_obj, "tolist"):
-            logits_obj = logits_obj.tolist()
-
-        while (
-            isinstance(logits_obj, list)
-            and logits_obj
-            and isinstance(logits_obj[0], list)
-        ):
-            logits_obj = logits_obj[-1]
-
-        if not isinstance(logits_obj, list):
-            raise TypeError("Logits must be a list of scores.")
-
-        return [float(score) for score in logits_obj]
+    #   this bolw about decode prompt ?
 
     def choose_best_token(self, logits: Any) -> int:
-        scores = self.get_last_logits(logits)
 
         best_id = 0
-        best_score = scores[0]
+        best_score = logits[0]
 
-        for token_id, score in enumerate(scores):
+        for token_id, score in enumerate(logits):
             if score > best_score:
                 best_score = score
                 best_id = token_id
 
         return best_id
+
+    def extract_json_object(self, text: str) -> str:
+        start = text.find("{")
+
+        if start == -1:
+            raise ValueError("No JSON object found.")
+
+        decoder = json.JSONDecoder()
+        _, end = decoder.raw_decode(text[start:])
+
+        return text[start:start + end]
 
     def generate_json_text(
         self,
@@ -119,11 +112,6 @@ class Decoder:
         prompt_ids = self.encode_to_ids(full_prompt)
         generated_ids: list[int] = []
 
-        started = False
-        brace_count = 0
-        inside_string = False
-        escape_next = False
-
         for _ in range(max_tokens):
             input_ids = prompt_ids + generated_ids
             logits = self.model.get_logits_from_input_ids(input_ids)
@@ -132,31 +120,11 @@ class Decoder:
 
             generated_text = self.model.decode(generated_ids)
 
-            started = False
-            brace_count = 0
-            inside_string = False
-            escape_next = False
-
-            for i, char in enumerate(generated_text):
-                if escape_next:
-                    escape_next = False
-                    continue
-
-                if char == "\\" and inside_string:
-                    escape_next = True
-                    continue
-
-                if char == '"':
-                    inside_string = not inside_string
-                    continue
-
-                if not inside_string:
-                    if char == "{":
-                        started = True
-                        brace_count += 1
-                    elif char == "}":
-                        brace_count -= 1
-                        if started and brace_count == 0:
-                            return generated_text[: i + 1]
+            try:
+                return self.extract_json_object(generated_text)
+            except json.JSONDecodeError:
+                pass
+            except ValueError:
+                pass
 
         raise ValueError("Could not generate complete JSON.")

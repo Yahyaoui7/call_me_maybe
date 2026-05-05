@@ -88,7 +88,7 @@ def main() -> None:
 
         prompts_list = transform_prompts(prompts)
 
-        model = Small_LLM_Model()
+        model = Small_LLM_Model(model_name=args.model)
 
         output_path = Path(args.output)
         output_path.parent.mkdir(parents=True, exist_ok=True)
