@@ -22,7 +22,7 @@ class FunctionCallGenerator:
         self,
     ) -> str:
         function_names = [function.name for function in self.functions]
-        function_names.append("__none__")
+        function_names.append("fn_none__")
         full_prompt = self.prompt_builder.build_function_name_prompt(
             self.functions
         )
@@ -30,7 +30,7 @@ class FunctionCallGenerator:
         chosen_name = self.decoder.constrained_generate_from_choices(
             full_prompt=full_prompt,
             choices=function_names)
-        if chosen_name == "__none__":
+        if chosen_name == "fn_none__":
             raise TypeError(
                 f"No matching function found for prompt: {self.prompt}"
             )

@@ -17,16 +17,16 @@ class PromptBuilder:
         text += (
             "- Choose exactly one function name from the available functions.\n"
         )
-        text += '- Choose "__none__" only if no available function can do the request.\n'
+        text += '- Choose "fn_none__" only if no available function can do the request.\n'
         text += "- Do not guess if the request is unrelated.\n"
         text += "- Write only the function name.\n\n"
 
         text += "Examples:\n"
         text += "Request: What is the weather today?\n"
-        text += "Answer: __none__\n\n"
+        text += "Answer: fn_none__\n\n"
 
         text += "Request: Open Google Chrome\n"
-        text += "Answer: __none__\n\n"
+        text += "Answer: fn_none__\n\n"
 
         text += "Request: What is the sum of 2 and 3?\n"
         text += "Answer: fn_add_numbers\n\n"
