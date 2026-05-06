@@ -6,18 +6,19 @@ class PromptBuilder:
     def __init__(self, prompt: str) -> None:
         self.prompt = prompt
 
-
     def build_function_name_prompt(
         self,
         functions: list[FunDef],
     ) -> str:
-        text = "Choose the best function for the user request.\n\n"
+        text = "Choose the best function for the user request.\n"
 
-        text += "Rules:\n"
-        text += (
-            "- Choose exactly one function name from the available functions.\n"
-        )
-        text += '- Choose "fn_none__" only if no available function can do the request.\n'
+        text += "\nRules:\n"
+        text += "- Choose exactly one function name "
+        text += "from the available functions.\n"
+
+        text += '- Choose "fn_none__" only if no available function'
+        text += ' can do the request.\n'
+
         text += "- Do not guess if the request is unrelated.\n"
         text += "- Write only the function name.\n\n"
 
